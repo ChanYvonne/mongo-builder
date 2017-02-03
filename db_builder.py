@@ -30,11 +30,12 @@ def mongofy(info):
 	students = bonsai.students
 	for student in info:
 		students.insert_one(student)
-
-def check():
 	print "Checking that everything was sent accurately! Printing contents\n"
 	for i in range(11):
 		print bonsai.students.find_one({'id': i-1})
+
+def check():
+	print ""
 
 def main():
 	arrs = setup()
