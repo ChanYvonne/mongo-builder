@@ -2,9 +2,6 @@ from pymongo import MongoClient
 from csv import DictReader
 
 def setup():
-	server = MongoClient('127.0.0.1')
-	bonsai = server.bonsai
-	students = bonsai.students
 	ps = DictReader(open("peeps.csv"))
 	courses = open("courses.csv")
 	return [ps, courses]
@@ -25,13 +22,24 @@ def cong(peeps, crses):
 				bayle[course['code']] = course['mark']
 				this['courses'].append(bayle)
 		ret.append(this)
-	for thing in ret:
-		print thing
-		print ""
 	return ret
+
+def mongofy(info):
+	server = MongoClient('127.0.0.1')
+	bonsai = server.bonsai
+	students = bonsai.students
+	for student in info:
+		students.insert_one(student)
+
+def check():
+	print "Checking that everything was sent accurately! Printing contents\n"
+	for i in range(11):
+		print bonsai.students.find_one({'id': i-1})
 
 def main():
 	arrs = setup()
 	tog = cong(arrs[0], arrs[1])
+	serv = mongofy(tog)
+	check()
 
 main()
