@@ -23,18 +23,24 @@ def cong(peeps, crses):
 	return ret
 
 def mongofy(info):
+        #mongo setup
 	server = MongoClient('127.0.0.1')
 	bonsai = server.bonsai
 	students = bonsai.students
-        if students.count() > 0:
+        
+        if students.count() > 0: #collection already has stuff
                 print "Db already exists. Clearing it and trying again..."
                 server.drop_database("bonsai")
                 mongofy(info)
                 return
+
+        #insert each student as a doc to collection
 	for student in info:
 		students.insert_one(student)
+
+        #check things were added correctly
 	print "Checking that everything was sent accurately! Printing contents\n"
-	for doc in students.find():
+	for doc in students.find(): #.find() returns all contents
                 print "Student: " + doc['name']
                 print "id: " + str(doc['id'])
                 print "age: " + str(doc['age'])
@@ -44,8 +50,8 @@ def mongofy(info):
                 print ""
 
 def main():
-	arrs = setup()
-	tog = cong(arrs[0], arrs[1])
-	serv = mongofy(tog)
+	arrs = setup() #get csvs of info
+	tog = cong(arrs[0], arrs[1]) #congregate the data from the two csvs
+        mongofy(tog) #add this data to mongo database
 
 main()
