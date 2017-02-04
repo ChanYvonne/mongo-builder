@@ -8,16 +8,20 @@ def setup():
 
 def cong(peeps, crses):
 	ret = []
+
+        
 	for peep in peeps:
+                #add info from peeps.csv
 		this = {'name': peep['name'],
 				'age': peep['age'],
 				'id': peep['id'],
 				'courses': []
 		}
-		crses.seek(0)
+		crses.seek(0) #look at crses from the beginning
 		courses = DictReader(crses)
 		for course in courses:
-			if course['id'] == peep['id']:
+			if course['id'] == peep['id']: #if course belongs to this student
+                                #then add it to their courses
 				this['courses'].append([course['code'], course['mark']])
 		ret.append(this)
 	return ret
