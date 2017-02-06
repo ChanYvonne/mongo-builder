@@ -9,13 +9,12 @@ def setup():
 def cong(peeps, crses):
 	ret = []
 
-        
 	for peep in peeps:
                 #add info from peeps.csv
 		this = {'name': peep['name'],
-				'age': peep['age'],
-				'id': peep['id'],
-				'courses': []
+			'age': peep['age'],
+			'id': peep['id'],
+			'courses': []
 		}
 		crses.seek(0) #look at crses from the beginning
 		courses = DictReader(crses)
@@ -28,7 +27,8 @@ def cong(peeps, crses):
 
 def mongofy(info):
         #mongo setup
-	server = MongoClient('127.0.0.1')
+	server = MongoClient('127.0.0.1') #for testing locally
+        #server = MongoClient('149.89.150.100') 
 	bonsai = server.bonsai
 	students = bonsai.students
         
@@ -36,12 +36,13 @@ def mongofy(info):
                 print "Db already exists. Clearing it and trying again..."
                 server.drop_database("bonsai")
                 mongofy(info)
-                return
-
+                return #returning nothing prevents it from crashing after checking for duplicates
+                
         #insert each student as a doc to collection
 	for student in info:
 		students.insert_one(student)
-
+                print "student added!"
+                
         #check things were added correctly
 	print "Checking that everything was sent accurately! Printing contents\n"
 	for doc in students.find(): #.find() returns all contents
