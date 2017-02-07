@@ -1,12 +1,6 @@
 from pymongo import MongoClient
-from csv import DictReader
 
-def setup():
-	ps = DictReader(open("peeps.csv"))
-	courses = open("courses.csv")
-	return [ps, courses]
-
-def get_avg():
+def get_info():
     server = MongoClient('127.0.0.1')
     bonsai = server.bonsai
     students = bonsai.students
@@ -14,13 +8,22 @@ def get_avg():
     arr = []
 
     for person in students.find():
-        info = { 'name' : person['name']
-                 'id' : str(person['id'])
+        sum = 0
+        amt = 0
+        for course in person['courses']:
+                sum += int(course[1])
+                amt += 1
+        avg = sum/amt
+        info = { 'name' : person['name'],
+                 'id' : str(person['id']),
+                 'average' : avg
                  }
-        
-        arr.append(
+        arr.append(info)
 
-def main():
-    info = setup()
+    for peep in arr:
+        print "Student: " + peep['name']
+        print "id: " + peep['id']
+        print "average: " + str(peep['average'])
+        print ""
 
-main()
+get_info()
