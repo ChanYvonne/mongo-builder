@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from csv import DictReader
 
 def get_info():
     server = MongoClient('127.0.0.1')
@@ -26,4 +27,33 @@ def get_info():
         print "average: " + str(peep['average'])
         print ""
 
+def teachers():
+    ts = DictReader(open("teachers.csv"))
+    #return ts
+    techrs = []
+
+    #setup to add student id's
+    for person in ts:
+        this = {
+            'name': person['teacher'],
+            'class': person['code'],
+            'period': person['period'],
+            'students': []
+        }
+        techrs.append(this)
+
+    server = MongoClient('127.0.0.1')
+    peeps = server.bonsai.students.find()
+    for peep in peeps: #iterate students
+        for course in peep['courses']: #iterate each students courses
+            for teacher in techrs: #iterate thru teachers
+                if teacher['class'] == course[0]: #if same course
+                    teacher['students'].append(peep['_id']) #add students
+    tch = server.bonsai.teachers
+    for person in techrs: #add results
+        tch.insert_one(person)
+    for info in tch.find():
+        print info
+    
 get_info()
+teachers()
