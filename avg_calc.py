@@ -28,6 +28,13 @@ def get_info():
         print ""
 
 def teachers():
+    #check
+    server = MongoClient('127.0.0.1')
+    tch = server.bonsai.teachers
+    if tch.count() > 0:
+        print "Teachers col already populated.. clearing for retry"
+        tch.delete_many({})
+    
     ts = DictReader(open("teachers.csv"))
     #return ts
     techrs = []
@@ -42,14 +49,12 @@ def teachers():
         }
         techrs.append(this)
 
-    server = MongoClient('127.0.0.1')
     peeps = server.bonsai.students.find()
     for peep in peeps: #iterate students
         for course in peep['courses']: #iterate each students courses
             for teacher in techrs: #iterate thru teachers
                 if teacher['class'] == course[0]: #if same course
                     teacher['students'].append(peep['_id']) #add students
-    tch = server.bonsai.teachers
     for person in techrs: #add results
         tch.insert_one(person)
     for info in tch.find():
